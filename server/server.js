@@ -5,14 +5,27 @@ var fs = require('fs');
 var mustache = require('mustache');
 var app = express();
 
+var appSettings = {
+  ajaxMode:true
+}
+
+var partials = new Object();
+
+addPartial("init","views/init.mustache");
+addPartial("main","views/main.mustache");
+
+app.use(express.static('public'));
+
 var customTags = [ '<%', '%>' ];
 mustache.tags = customTags;
 
 function sendHomePage(vars,res){
 
-  fs.readFile('home-view.html', 'utf8', function (err,data) {
+  vars.appSettings = appSettings;
 
-    var rendered = mustache.render(data, vars);
+  fs.readFile('views/home.mustache', 'utf8', function (err,data) {
+
+    var rendered = mustache.to_html(data, vars, partials);
 
     res.send(rendered);
 
@@ -23,7 +36,7 @@ function sendHomePage(vars,res){
 app.get('/', function (req, res) {
   if(Object.keys(req.query).length === 0){
 
-    sendHomePage({"init":true},res);
+    sendHomePage({"query":null},res);
 
   }else if(typeof req.query.q == "undefined"){
 
@@ -31,7 +44,7 @@ app.get('/', function (req, res) {
 
   }else{
 
-    sendHomePage({"init":false},res);
+    sendHomePage({"query":req.query.q},res);
 
   }
 
@@ -43,3 +56,9 @@ var server = app.listen(8083, function () {
 
    console.log("Spirit Looks app listening at http://%s:%s", host, port)
 })
+
+
+function addPartial(name,filepath){
+  var data = fs.readFileSync(filepath);
+  partials[name] = data.toString();
+}
