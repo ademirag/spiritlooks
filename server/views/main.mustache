@@ -1,70 +1,22 @@
-<div class="main" ng-show="'<%query%>'!=''" ng-controller="spiritlooksMainController">
+<div id="main" class="main pageAnimation" ng-show="'<%query%>' != ''"  ng-controller="spiritlooksMainController">
 <div class="wrapper">
   <div class="header container">
 
     <p class="sprite sprite-logo-small"><a href="/"></a></p>
-    <p class="field"><input type="text" ng-model="q" placeholder="SEARCH"><a href="#" ng-click="onSearch($event)" class="sprite sprite-search-icon-small"></a></p>
+    <p class="field"><input type="text" ng-model="q" placeholder="SEARCH" ng-keydown="onQueryKeyDown($event)"><a href="#" ng-click="onSearch($event)" class="sprite sprite-search-icon-small"></a></p>
 
   </div>
 
   <div class="body container">
-    <div class="result container">
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
-      <div>
-        <h1>Jiddu Krishnamurti - Kimim ben? </h1>
-        <p>Try watching this video on www.youtube.com, or enable JavaScript if it is ... Hz. Mevlana ... Öfke, Kıskançlık ve Korkuyu Aşmak - Osho; Sevginin Kökleri ... Kitap / DNA'nın On İki Tabakası -; DNA ve Bilinçli Şifa - Sol Luckman ...</p>
-        <h2>kendimlekonusuyorum.blogspot.com/.../jiddu-krishnamurti-kimim-ben-turkce.html</h2>
-      </div>
+    <div id="result" class="result container">
+
     </div>
-    <div class="filter">
+    <div id="filter" class="filter">
       <h1>FILTRELE</h1>
-      <spirit-looks-filter>MEVLANA</spirit-looks-filter>
-      <spirit-looks-filter>OSHO</spirit-looks-filter>
-      <spirit-looks-filter>MOOJI</spirit-looks-filter>
+      <spirit-looks-filter-all></spirit-looks-filter-all>
+      <spirit-looks-filter keyword="mevlana">MEVLANA CELALEDDİN RUMİ</spirit-looks-filter>
+      <spirit-looks-filter keyword="osho">OSHO</spirit-looks-filter>
+      <spirit-looks-filter keyword="mooji">MOOJI</spirit-looks-filter>
     </div>
   </div>
 </div>

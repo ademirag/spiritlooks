@@ -147,6 +147,7 @@ input:focus{
 
 .result{
 	width: 770px;
+	min-width: 770px;
 }
 
 .result,.filter{
@@ -280,12 +281,39 @@ input:focus{
     background-position: -116px -92px;
 }
 
+/* loading indicator */
+
+#loading{
+	position: absolute;
+	width: 120px;
+	height:120px;
+	top:50%;
+	left:50%;
+	margin-left: -60px;
+	margin-top: -60px;
+}
+
 /* ANIMATIONS */
 
-.anim-show-hide {
-  transition: all linear 0.5s;
+.pageAnimation{
+	opacity: 1;
 }
-.anim-show-hide.ng-hide {
-  opacity: 0;
+
+.pageAnimation.ng-hide{
+	opacity: 0;
+}
+
+.pageAnimation.ng-hide-add {
+	-webkit-transition: opacity 0.5s ease-in-out;
+	-moz-transition: opacity 0.5s ease-in-out;
+	transition: opacity 0.5s ease-in-out;
+	display:block !important;
+}
+
+/* when showing the thing */
+.pageAnimation.ng-hide-remove{
+	-webkit-transition: opacity 0.5s ease-in-out;
+	-moz-transition: opacity 0.5s ease-in-out;
+	transition: opacity 0.5s ease-in-out;
 	display:block !important;
 }

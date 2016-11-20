@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  <script type="text/javascript">
+  <%#query%>
+    var query = "<%query%>";
+  <%/query%>
+  <%^query%>
+    var query = null;
+  <%/query%>
+  <%#result%>
+    var result = "<%result%>";
+  <%/result%>
+  <%^result%>
+    var result = null;
+  <%/result%>
+  var appSettings = "<%appSettingsString%>";
+  </script>
+  <script src="angular.min.js"></script>
+  <script src="angular-animate.js"></script>
   <script src="spiritlooks-angular.js"></script>
   <title><%#query%><%query%> - <%/query%>Spirit Looks</title>
   <link rel="stylesheet" type="text/css" href="/spiritlooks.css">
+
 </head>
 <body ng-app="spiritlooksApp">
 
@@ -20,6 +37,6 @@
     <%> init%>
   <%/query%>
 <%/appSettings.ajaxMode%>
-
+<div id="loading" class="ng-hide"><img src="load-indicator.gif"></div>
 </body>
 </html>
