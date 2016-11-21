@@ -4,6 +4,23 @@ if(typeof String.prototype.trim !== 'function') {
   }
 }
 
+if(typeof String.prototype.replaceAll !== 'function') {
+  String.prototype.replaceAll = function(search, replacement) {
+      var target = this;
+      return target.replace(new RegExp(search, 'g'), replacement);
+  };
+}
+
+function hashURL(str){
+  str = str.replaceAll(' ','-');
+  return str;
+}
+
+function unhashURL(str){
+  str = decodeURIComponent(str);
+  str = str.replaceAll('-',' ');
+  return str;
+}
 
 
 
@@ -16,8 +33,6 @@ spiritLooksApp.factory('search',function($http,$location,$animate){
 
     service.search = function(scope){
       if(serverAppSettings.ajaxMode == true){
-
-        $location.url('q='+scope.q+'&f='+service.filters(scope));
 
         var loadIndicator = angular.element(document.getElementById("loading"));
         loadIndicator.removeClass("ng-hide");
@@ -94,7 +109,7 @@ spiritLooksApp.factory('search',function($http,$location,$animate){
     return service;
 });
 
-spiritLooksApp.controller('spiritlooksIndexController', ['$scope','search','$timeout','$animate',function($scope,search,$timeout,$animate) {
+spiritLooksApp.controller('spiritlooksIndexController', ['$scope','search','$timeout','$animate','$location',function($scope,search,$timeout,$animate,$location) {
 
     $scope.section = "index";
 
@@ -105,6 +120,7 @@ spiritLooksApp.controller('spiritlooksIndexController', ['$scope','search','$tim
     } else {
       $scope.q = "";
     }
+
     $scope.element = angular.element(document.querySelector('#index'));
 
     function doSearch(){
@@ -112,6 +128,7 @@ spiritLooksApp.controller('spiritlooksIndexController', ['$scope','search','$tim
       if($scope.q.trim() == "") return;
 
       if(serverAppSettings.ajaxMode == true){
+
         $animate.addClass($scope.element,"ng-hide");
 
         $timeout(function(){
@@ -134,9 +151,21 @@ spiritLooksApp.controller('spiritlooksIndexController', ['$scope','search','$tim
       doSearch();
     }
 
+
+    $scope.init = function(){
+      if(serverAppSettings.ajaxMode){
+        var urlOpts = $location.url().split('/');
+        if(urlOpts.length == 3){
+          $scope.q = unhashURL(urlOpts[1]);
+          search.search($scope);
+          $scope.element.remove();
+        }
+      }
+    };
+
 }]);
 
-spiritLooksApp.controller('spiritlooksMainController', ['$scope','search',function($scope,search) {
+spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$location','$interval',function($scope,search,$location,$interval) {
 
   $scope.section = "main";
   $scope.filtersValue = [];
@@ -163,12 +192,14 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search',functi
 
   $scope.onQueryKeyDown = function(e){
     if(e.keyCode == 13){
+        $location.url(hashURL($scope.q)+'/'+search.filters($scope));
         doSearch();
     }
   }
 
   $scope.onSearch = function(e){
     e.preventDefault();
+    $location.url(hashURL($scope.q)+'/'+search.filters($scope));
     doSearch();
   }
 
@@ -215,6 +246,8 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search',functi
       angular.element(document.getElementById("selectAllHandle")).removeClass("selected");
     }
 
+    $scope.updateKeywordsHash();
+
   }
 
   $scope.onSoloClick = function(e){
@@ -247,6 +280,8 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search',functi
       }
       angular.element(document.getElementById("selectAllHandle")).removeClass("disabled");
     }
+
+    $scope.updateKeywordsHash();
   }
 
   $scope.onSelectAll = function(e){
@@ -282,7 +317,26 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search',functi
         }
       }
     }
+
+    $scope.updateKeywordsHash();
   }
+
+  $scope.updateKeywordsHash = function(){
+    $location.url(hashURL($scope.q)+'/'+search.filters($scope));
+  }
+
+  var oldHash = hashURL($location.url());
+
+  $interval(function () {
+    if(oldHash != hashURL($location.url())){
+      var urlOpts = $location.url().split('/');
+      if(urlOpts.length == 3){
+        $scope.q = unhashURL(urlOpts[1]);
+        doSearch();
+      }
+    }
+    oldHash = $location.url();
+  }, 100);
 
 }]  );
 

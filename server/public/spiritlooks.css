@@ -146,7 +146,7 @@ input:focus{
 }
 
 .result{
-	width: 770px;
+	width: 810px;
 	min-width: 770px;
 }
 
@@ -155,36 +155,33 @@ input:focus{
 }
 
 .result div{
-	float:left;
-	width: 355px;
-	height:145px;
-	padding:12px;
-	margin-bottom:40px;
+	padding:12px 12px 12px 12px;
+	margin-bottom:10px;
 }
 
 .result div h1{
 	font-family: 'Oswald', sans-serif;
-	color:#c422e1;
+	color:#432c67;
 	font-size:20px;
-	margin-bottom:19px;
+	margin-bottom:9px;
 }
 
 .result div p{
 	font-family: 'PT Sans Narrow', sans-serif;
 	color:#404040;
 	font-size:18px;
-	margin-bottom:16px;
+	margin-bottom:9px;
 }
 
 .result div h2{
 	font-family: 'PT Sans Narrow', sans-serif;
-	color:#1f8817;
+	color:#9a9a9a;
 	font-size:14px;
 }
 
 .filter{
 	background-color:#fafafa;
-	width:380px;
+	width:340px;
 	padding-bottom:200px;
 	padding-left:36px;
 	padding-right:36px;

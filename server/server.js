@@ -3,7 +3,25 @@
 
 
 var appSettings = {
-  ajaxMode:true
+  ajaxMode:true,
+  gurus:[
+    {
+      keyword:"mevalana",
+      title:"MEVLANA CELALEDDİN RUMİ"
+    },
+    {
+      keyword:"mooji",
+      title:"MOOJİ"
+    },
+    {
+      keyword:"osho",
+      title:"OSHO"
+    },
+    {
+      keyword:"krishnamurti",
+      title:"JIDDU KRISHNAMURTI"
+    }
+  ]
 }
 
 var port = 8083;
@@ -24,6 +42,13 @@ var customTags = [ '<%', '%>' ];
 mustache.tags = customTags;
 
 function sendHomePage(vars,res){
+
+  var gurusSorted = appSettings.gurus.slice(0);
+  gurusSorted.sort(function(a,b) {
+      return a.title > b.title ? 1 : (a.title == b.title ? 0 : -1);
+  });
+
+  appSettings.gurusSorted = gurusSorted;
 
   vars.appSettingsString = JSON.stringify(appSettings);
   vars.appSettings = appSettings;

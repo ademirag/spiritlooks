@@ -1,4 +1,4 @@
-<div id="index" class="index container pageAnimation" ng-show="'<%query%>'=='' && visible" ng-controller="spiritlooksIndexController">
+<div id="index" class="index container pageAnimation" ng-show="'<%query%>'=='' && visible" ng-controller="spiritlooksIndexController" ng-init="init()">
 
   <p class="sprite sprite-logo"><a href="/"></a></p>
   <p class="field"><input type="text" ng-model="q" placeholder="SEARCH" ng-keydown="onQueryKeyDown($event)"><a href="#" ng-click="onSearch($event)" class="sprite sprite-search-icon"></a></p>

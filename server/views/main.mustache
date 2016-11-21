@@ -8,15 +8,15 @@
   </div>
 
   <div class="body container">
-    <div id="result" class="result container">
+    <div id="result" class="result">
 
     </div>
     <div id="filter" class="filter">
       <h1>FILTRELE</h1>
       <spirit-looks-filter-all></spirit-looks-filter-all>
-      <spirit-looks-filter keyword="mevlana">MEVLANA CELALEDDİN RUMİ</spirit-looks-filter>
-      <spirit-looks-filter keyword="osho">OSHO</spirit-looks-filter>
-      <spirit-looks-filter keyword="mooji">MOOJI</spirit-looks-filter>
+      <%#appSettings.gurusSorted%>
+      <spirit-looks-filter keyword="<%keyword%>"><%title%></spirit-looks-filter>
+      <%/appSettings.gurusSorted%>
     </div>
   </div>
 </div>
