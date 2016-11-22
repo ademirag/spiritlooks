@@ -22,7 +22,7 @@ function unhashURL(str){
   return str;
 }
 
-
+var doSearchTimeout = 0;
 
 var spiritLooksApp = angular.module('spiritlooksApp', ['ngAnimate']);
 
@@ -45,7 +45,9 @@ spiritLooksApp.factory('search',function($http,$location,$animate){
             filter.addClass("ng-hide");
         }
 
-        $http.get("search?q="+scope.q+'&f='+service.filters(scope))
+        var filters = service.filters(scope);
+
+        $http.get("search?q="+scope.q+'&f='+filters[0]+'&s='+filters[1])
             .then(function(response) {
 
               if(response.data.error == 0){
@@ -54,7 +56,7 @@ spiritLooksApp.factory('search',function($http,$location,$animate){
 
                 loadIndicator.addClass("ng-hide");
 
-                if(scope.section == "index"){
+              //  if(scope.section == "index"){
 
                   var main = angular.element(document.getElementById("main"));
 
@@ -62,16 +64,18 @@ spiritLooksApp.factory('search',function($http,$location,$animate){
 
                   $animate.removeClass(main,"ng-hide");
 
-                }else if(scope.section == "main"){
+              //  }else if(scope.section == "main"){
+                  if(scope.section == "main"){
+                    filter.removeClass("ng-hide");
+                  }
 
-                  filter.removeClass("ng-hide");
-
-                }
+                //}
 
               }
             });
       }else{
-        window.location = '/?q='+scope.q+'&f='+service.filters(scope);
+        var filters = service.filters(scope);
+        window.location = '/?q='+scope.q+'&f='+filters[0]+'&s='+filters[1];
       }
     }
 
@@ -88,7 +92,9 @@ spiritLooksApp.factory('search',function($http,$location,$animate){
     }
 
     service.filters = function(scope){
-      if(scope.section == "index") return "all";
+      if(scope.section == "index"){
+        return [filterStr,""];
+      }
 
       for(var i = 0; i < scope.filters.length; i++){
         var handles = scope.filters[i].find("a");
@@ -96,13 +102,13 @@ spiritLooksApp.factory('search',function($http,$location,$animate){
           var handle = angular.element(handles[j]);
           if(handle.hasClass("solo")){
             if(handle.hasClass("selected")){
-              return handle.attr("data-id");
+              return [scope.filtersValue.join(','),handle.attr("data-id")];
             }
           }
         }
       }
 
-      return scope.filtersValue.join(',');
+      return [scope.filtersValue.join(','),""];
 
     }
 
@@ -131,9 +137,14 @@ spiritLooksApp.controller('spiritlooksIndexController', ['$scope','search','$tim
 
         $animate.addClass($scope.element,"ng-hide");
 
-        $timeout(function(){
+        doSearchTimeout = 500;
+
+        var filters = search.filters($scope);
+        $location.url(hashURL($scope.q)+'/'+filters[0]+'/'+filters[1]);
+
+        /*$timeout(function(){
           search.search($scope);
-        },500);
+        },500);*/
       }else{
         search.search($scope);
       }
@@ -155,17 +166,22 @@ spiritLooksApp.controller('spiritlooksIndexController', ['$scope','search','$tim
     $scope.init = function(){
       if(serverAppSettings.ajaxMode){
         var urlOpts = $location.url().split('/');
-        if(urlOpts.length == 3){
+        if(urlOpts.length >= 3){
           $scope.q = unhashURL(urlOpts[1]);
           search.search($scope);
           $scope.element.remove();
+        }
+      }else{
+        var urlOpts = $location.url().split('/');
+        if(urlOpts.length == 4){
+          window.location = '/?q='+unhashURL(urlOpts[1])+'&f='+urlOpts[2];
         }
       }
     };
 
 }]);
 
-spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$location','$interval',function($scope,search,$location,$interval) {
+spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$location','$interval','$timeout',function($scope,search,$location,$interval,$timeout) {
 
   $scope.section = "main";
   $scope.filtersValue = [];
@@ -177,6 +193,8 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$loca
   }
 
   $scope.filters = [];
+
+
 
   if(result){
     search.fillResult(angular.fromJson(angular.element('<textarea />').html(result).text()));
@@ -192,14 +210,16 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$loca
 
   $scope.onQueryKeyDown = function(e){
     if(e.keyCode == 13){
-        $location.url(hashURL($scope.q)+'/'+search.filters($scope));
-        doSearch();
+      var filters = search.filters($scope);
+      $location.url(hashURL($scope.q)+'/'+filters[0]+'/'+filters[1]);
+      doSearch();
     }
   }
 
   $scope.onSearch = function(e){
     e.preventDefault();
-    $location.url(hashURL($scope.q)+'/'+search.filters($scope));
+    var filters = search.filters($scope);
+    $location.url(hashURL($scope.q)+'/'+filters[0]+'/'+filters[1]);
     doSearch();
   }
 
@@ -210,21 +230,17 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$loca
       el.addClass("selected");
     }
   }
-  $scope.onSelectClick = function(e){
-    e.preventDefault();
-    var el = angular.element(e.target);
-    if(el.hasClass("disabled")) return;
-    toggle(el);
 
+  function doSelect(el){
     if(el.hasClass("selected")){
 
-      if(this.filtersValue.indexOf(el.attr("data-id")) == -1){
-        this.filtersValue.push(el.attr("data-id"));
+      if($scope.filtersValue.indexOf(el.attr("data-id")) == -1){
+        $scope.filtersValue.push(el.attr("data-id"));
       }
 
       var selectedCount = 0;
-      for(var i = 0; i < this.filters.length; i++){
-        var handles = this.filters[i].find("a");
+      for(var i = 0; i < $scope.filters.length; i++){
+        var handles = $scope.filters[i].find("a");
         for(var j = 0; j < handles.length; j++){
           var handle = angular.element(handles[j]);
           if(handle.hasClass("select")){
@@ -233,30 +249,26 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$loca
             }
           }
         }
-        if(selectedCount == this.filters.length){
-          angular.element(document.getElementById("selectAllHandle")).addClass("selected");
-        }
+      }
+      if(selectedCount == $scope.filters.length){
+        angular.element(document.getElementById("selectAllHandle")).addClass("selected");
       }
     }else{
-      var ind = this.filtersValue.indexOf(el.attr("data-id"));
+      var ind = $scope.filtersValue.indexOf(el.attr("data-id"));
       if(ind != -1){
-        this.filtersValue.splice(ind, 1);
+        $scope.filtersValue.splice(ind, 1);
       }
 
       angular.element(document.getElementById("selectAllHandle")).removeClass("selected");
     }
 
-    $scope.updateKeywordsHash();
 
   }
 
-  $scope.onSoloClick = function(e){
-    e.preventDefault();
-    var el = angular.element(e.target);
-    toggle(el);
+  function doSolo(el){
     if(el.hasClass("selected")){
-      for(var i = 0; i < this.filters.length; i++){
-        var handles = this.filters[i].find("a");
+      for(var i = 0; i < $scope.filters.length; i++){
+        var handles = $scope.filters[i].find("a");
         for(var j = 0; j < handles.length; j++){
           var handle = angular.element(handles[j]);
           if(handle.hasClass("select")){
@@ -269,8 +281,8 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$loca
       el.addClass("selected");
       angular.element(document.getElementById("selectAllHandle")).addClass("disabled");
     }else{
-      for(var i = 0; i < this.filters.length; i++){
-        var handles = this.filters[i].find("a");
+      for(var i = 0; i < $scope.filters.length; i++){
+        var handles = $scope.filters[i].find("a");
         for(var j = 0; j < handles.length; j++){
           var handle = angular.element(handles[j]);
           if(handle.hasClass("select")){
@@ -280,6 +292,26 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$loca
       }
       angular.element(document.getElementById("selectAllHandle")).removeClass("disabled");
     }
+  }
+
+  $scope.onSelectClick = function(e){
+    e.preventDefault();
+    var el = angular.element(e.target);
+    if(el.hasClass("disabled")) return;
+    toggle(el);
+
+    doSelect(el);
+
+    $scope.updateKeywordsHash();
+
+  }
+
+  $scope.onSoloClick = function(e){
+    e.preventDefault();
+    var el = angular.element(e.target);
+    toggle(el);
+
+    doSolo(el);
 
     $scope.updateKeywordsHash();
   }
@@ -322,20 +354,81 @@ spiritLooksApp.controller('spiritlooksMainController', ['$scope','search','$loca
   }
 
   $scope.updateKeywordsHash = function(){
-    $location.url(hashURL($scope.q)+'/'+search.filters($scope));
+    var filters = search.filters($scope);
+    if(serverAppSettings.ajaxMode){
+      $location.url(hashURL($scope.q)+'/'+filters[0]+'/'+filters[1]);
+    }else{
+      window.location = '/?q='+$scope.q+'&f='+filters[0]+'&s='+filters[1];
+    }
   }
+
+  function doInitFilter(filter){
+    var filterKeywords = filter.split(',');
+    var selects = document.getElementsByClassName("select");
+    for(var i = 0; i < filterKeywords.length; i++){
+      var keyword = filterKeywords[i];
+      for(var j = 0; j < selects.length; j++){
+        var el = angular.element(selects[j]);
+        if(el.attr("data-id") == keyword){
+          if(el.hasClass("selected") == false){
+            el.addClass("selected");
+          }
+          doSelect(el);
+          break;
+        }
+      }
+    }
+  }
+
+  function doInitSolo(solo){
+    var solos = document.getElementsByClassName("solo");
+    for(var j = 0; j < solos.length; j++){
+      var el = angular.element(solos[j]);
+      if(el.attr("data-id") == solo){
+        if(el.hasClass("selected") == false){
+          el.addClass("selected");
+        }
+        doSolo(el);
+        break;
+      }
+    }
+  }
+
+  $scope.init = function(){
+    $timeout(function(){
+
+      if(filter){
+        doInitFilter(filter);
+      }
+
+      if(solo){
+        doInitSolo(solo);
+      }
+    },0);
+  };
 
   var oldHash = hashURL($location.url());
 
   $interval(function () {
-    if(oldHash != hashURL($location.url())){
-      var urlOpts = $location.url().split('/');
-      if(urlOpts.length == 3){
-        $scope.q = unhashURL(urlOpts[1]);
-        doSearch();
+    if(serverAppSettings.ajaxMode == true){
+      if(oldHash != hashURL($location.url())){
+        var urlOpts = $location.url().split('/');
+        if(urlOpts.length >= 3){
+          $scope.q = unhashURL(urlOpts[1]);
+          if(urlOpts[2]){
+            doInitFilter(urlOpts[2]);
+          }
+          if(urlOpts[3]){
+            doInitSolo(urlOpts[3]);
+          }
+          $timeout(function(){
+            doSearch();
+          },doSearchTimeout);
+          doSearchTimeout = 0;
+        }
       }
+      oldHash = $location.url();
     }
-    oldHash = $location.url();
   }, 100);
 
 }]  );

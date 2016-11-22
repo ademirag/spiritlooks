@@ -29,6 +29,7 @@ var port = 8083;
 var express = require('express');
 var fs = require('fs');
 var mustache = require('mustache');
+var modRewrite = require('connect-modrewrite');
 var app = express();
 
 var partials = new Object();
@@ -36,7 +37,10 @@ var partials = new Object();
 addPartial("init","views/init.mustache");
 addPartial("main","views/main.mustache");
 
-app.use(express.static('public'));
+app.use(modRewrite([
+    '^/topic/(.*)$ /?q=$1&f=all&p=1 [L]',
+  ]))
+.use(express.static('public'));
 
 var customTags = [ '<%', '%>' ];
 mustache.tags = customTags;
@@ -65,21 +69,64 @@ function sendHomePage(vars,res){
 
 app.get('/', function (req, res) {
 
-// BURASI OK, ON YÜZ DÜŞÜNECEK
+  appSettings.ajaxMode = true;
 
   if(Object.keys(req.query).length === 0){
 
-    sendHomePage({"query":null},res);
+    var gurusLen = appSettings.gurus.length;
+    fStr = appSettings.gurus[0].keyword;
+    for(var i = 1; i < gurusLen; i++){
+      fStr += ','+ appSettings.gurus[i].keyword;
+    }
+
+    sendHomePage({"query":null,"filterStr":fStr},res);
 
   }else{
 
     if(typeof req.query.q == "undefined"){
 
-      sendHomePage({"query":null},res);
+      var gurusLen = appSettings.gurus.length;
+      fStr = appSettings.gurus[0].keyword;
+      for(var i = 1; i < gurusLen; i++){
+        fStr += ','+ appSettings.gurus[i].keyword;
+      }
+
+      sendHomePage({"query":null,"filterStr":fStr},res);
 
     }else{
 
-      sendHomePage({"query":req.query.q,"result":JSON.stringify(search())},res);
+      if(req.query.p){
+        appSettings.ajaxMode = false;
+      }
+
+      var qStr = req.query.q.split('/')[0];
+
+      var fStr = req.query.f;
+
+      if(typeof req.query.f == "undefined" ){
+        res.redirect('/?q='+req.query.q+'&f=all&s=');
+        return;
+      }
+
+      if(fStr == "all"){
+        var gurusLen = appSettings.gurus.length;
+        fStr = appSettings.gurus[0].keyword;
+        for(var i = 1; i < gurusLen; i++){
+          fStr += ','+ appSettings.gurus[i].keyword;
+        }
+      }
+
+      if(appSettings.ajaxMode){
+
+        res.redirect('/#/'+qStr+'/'+fStr+'/'+req.query.s);
+
+      }else{
+
+        sendHomePage({"query":qStr,"filter":fStr,"solo":req.query.s,"result":JSON.stringify(search())},res);
+
+      }
+
+
 
     }
 
